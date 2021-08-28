@@ -16,6 +16,7 @@ Authors: Sanjay Ghemawat (sanjay@google.com) and Jeff Dean (jeff@google.com)
   * Forward and backward iteration is supported over the data.
   * Data is automatically compressed using the [Snappy compression library](https://google.github.io/snappy/).
   * External activity (file system operations etc.) is relayed through a virtual interface so users can customize the operating system interactions.
+  * **GRPC client-server added.** 
 
 # Documentation
 
@@ -25,7 +26,6 @@ Authors: Sanjay Ghemawat (sanjay@google.com) and Jeff Dean (jeff@google.com)
 
   * This is not a SQL database.  It does not have a relational data model, it does not support SQL queries, and it has no support for indexes.
   * Only a single process (possibly multi-threaded) can access a particular database at a time.
-  * There is no client-server support builtin to the library.  An application that needs such support will have to wrap their own server around the library.
 
 # Getting the Source
 
