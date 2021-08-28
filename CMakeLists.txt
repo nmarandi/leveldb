@@ -32,7 +32,7 @@ endif (WIN32)
 
 option(LEVELDB_BUILD_TESTS "Build LevelDB's unit tests" ON)
 option(LEVELDB_BUILD_BENCHMARKS "Build LevelDB's benchmarks" ON)
-option(LEVELDB_BUILD_GRPC_SERVERS "Install LevelDB's header and library" ON)
+option(LEVELDB_BUILD_GRPC_SERVER "Build LevelDB's GRPC Server" ON)
 option(LEVELDB_INSTALL "Install LevelDB's header and library" ON)
 
 include(CheckIncludeFile)
@@ -386,9 +386,9 @@ if(LEVELDB_BUILD_TESTS)
   endif(NOT BUILD_SHARED_LIBS)
 endif(LEVELDB_BUILD_TESTS)
 
-if(LEVELDB_BUILD_GRPC_SERVERS)
+if(LEVELDB_BUILD_GRPC_SERVER)
   add_subdirectory(grpc)
-endif(LEVELDB_BUILD_GRPC_SERVERS)
+endif(LEVELDB_BUILD_GRPC_SERVER)
 
 if(LEVELDB_BUILD_BENCHMARKS)
   function(leveldb_benchmark bench_file)

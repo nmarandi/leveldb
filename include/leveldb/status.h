@@ -75,7 +75,6 @@ class LEVELDB_EXPORT Status {
   // Returns the string "OK" for success.
   std::string ToString() const;
 
- private:
   enum Code {
     kOk = 0,
     kNotFound = 1,
@@ -88,6 +87,8 @@ class LEVELDB_EXPORT Status {
   Code code() const {
     return (state_ == nullptr) ? kOk : static_cast<Code>(state_[4]);
   }
+  
+ private:
 
   Status(Code code, const Slice& msg, const Slice& msg2);
   static const char* CopyState(const char* s);

@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package leveldb;
+package leveldb.grpc;
 
 message Options {
   enum CompressionType {
@@ -9,16 +9,17 @@ message Options {
     kNoCompression = 0;
     kSnappyCompression = 1;
   }
-  optional bool create_if_missing = 1;
-  optional bool error_if_exists = 2;
-  optional bool paranoid_checks = 3;
-  optional fixed32 write_buffer_size = 4;
-  optional int32 max_open_files = 5;
-  optional fixed32 block_size = 6;
-  optional int32 block_restart_interval = 7;
-  optional fixed32 max_file_size = 8;
-  optional CompressionType compression = 9;
-  optional bool reuse_logs = 10;
+  optional bool create_if_missing = 1 [default = false];
+  optional bool error_if_exists = 2 [default = false];
+  optional bool paranoid_checks = 3 [default = false];
+  optional fixed32 write_buffer_size = 4
+      [default = 4194304];  // 4 * 1024 * 1024
+  optional int32 max_open_files = 5 [default = 1000];
+  optional fixed32 block_size = 6 [default = 4096];  // 4 * 1024
+  optional int32 block_restart_interval = 7 [default = 16];
+  optional fixed32 max_file_size = 8 [default = 2097152];  // 2 * 1024 * 1024
+  optional CompressionType compression = 9 [default = kSnappyCompression];
+  optional bool reuse_logs = 10 [default = false];
 }
 
 message ReadOptions {
@@ -27,7 +28,7 @@ message ReadOptions {
 }
 
 message WriteOptions {
-  optional bool sync = 1;
+  optional bool sync = 1 [default = false];
 }
 
 message Status {
@@ -55,6 +56,7 @@ message DBReq {
   optional string key = 5;
   optional string value = 6;
   optional WriteBatch write_batch = 7;
+  optional Iterator iterator = 8;
 }
 
 message DBRes {
@@ -71,6 +73,7 @@ service DBRPC {
   rpc Write(DBReq) returns (DBRes);
   rpc Get(DBReq) returns (DBRes);
   rpc NewIterator(DBReq) returns (DBRes);
+  rpc DestroyIterator(DBReq) returns (DBRes);
   rpc Destroy(DBReq) returns (DBRes);
   rpc Repair(DBReq) returns (DBRes);
 }
@@ -86,7 +89,9 @@ message WriteBatchReq {
   optional WriteBatch write_batch_append = 4;
 }
 
-message WriteBatchRes {}
+message WriteBatchRes {
+  required Status status = 1;
+}
 
 service WriteBatchRPC {
   rpc Create(WriteBatchReq) returns (WriteBatchRes);
@@ -103,13 +108,14 @@ message Iterator {
 
 message IteratorReq {
   required Iterator iterator = 1;
+  optional string target_key = 3;
 }
 
 message IteratorRes {
-  optional bool valid = 1;
-  optional string key = 2;
-  optional string value = 3;
-  optional Status status = 4;
+  optional Status status = 1;
+  optional bool valid = 2;
+  optional string key = 3;
+  optional string value = 4;
 }
 
 service IteratorRPC {
@@ -121,5 +127,4 @@ service IteratorRPC {
   rpc Prev(IteratorReq) returns (IteratorRes);
   rpc Key(IteratorReq) returns (IteratorRes);
   rpc Value(IteratorReq) returns (IteratorRes);
-  rpc Status(IteratorReq) returns (IteratorRes);
 }
